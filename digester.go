@@ -93,6 +93,18 @@ func NewKillDetailsHandler() *KillDetailsHandler {
 }
 
 func (h *KillDetailsHandler) Handle(logLine string, match *Match) error {
+	killerPiece, killedPlayerPiece, reasonPiece := 1, 2, 3
+	matches := killDetailsRe.FindStringSubmatch(logLine)
+	if len(matches) == 0 {
+		return nil
+	}
+
+	match.AddKillAndMeans(
+		matches[killerPiece],
+		matches[killedPlayerPiece],
+		matches[reasonPiece],
+	)
+
 	return nil
 }
 
