@@ -22,6 +22,7 @@ func NewMatch() *Match {
 		KillsByMeans:  map[string]int{},
 		PlayersInGame: map[string]bool{},
 		Done:          false,
+		InProgress:    false,
 	}
 }
 

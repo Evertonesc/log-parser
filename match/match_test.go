@@ -30,6 +30,7 @@ func TestMatch_AddKillAndMeans(t *testing.T) {
 					"Isgalamido":  0,
 					"Bruce Wayne": 0,
 				},
+				KillsByMeans: map[string]int{},
 			},
 			args: args{
 				killer: "Bruce Wayne",
