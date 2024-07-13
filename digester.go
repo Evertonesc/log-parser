@@ -7,6 +7,7 @@ import (
 var (
 	initGameRe       = regexp.MustCompile(`^\s*\d+:\d+\s+InitGame:`)
 	clientUserInfoRe = regexp.MustCompile(`ClientUserinfoChanged:\s+\d+\s+n\\([^\\]+)`)
+	killDetailsRe    = regexp.MustCompile(`Kill: \d+ \d+ \d+: ([^ ]+) killed ([^ ]+) by ([^ ]+)`)
 )
 
 type LogDigesterHandler interface {
@@ -23,6 +24,10 @@ type (
 	}
 
 	AddPlayerHandler struct {
+		generalLogDigesterHandler
+	}
+
+	KillDetailsHandler struct {
 		generalLogDigesterHandler
 	}
 )
@@ -76,8 +81,19 @@ func (h *AddPlayerHandler) Handle(logLine string, match *Match) error {
 	return h.handleNext(logLine, match)
 }
 
+func NewKillDetailsHandler() *KillDetailsHandler {
+	return &KillDetailsHandler{}
+}
+
+func (h *KillDetailsHandler) Handle(logLine string, match *Match) error {
+	return nil
+}
+
 func LoadLogsDigester() LogDigesterHandler {
+	killDetailsHandler := NewKillDetailsHandler()
+
 	addPlayerHandler := NewAddPlayerHandler()
+	addPlayerHandler.SetNext(killDetailsHandler)
 
 	initGameHandler := NewInitGameHandler()
 	initGameHandler.SetNext(addPlayerHandler)
