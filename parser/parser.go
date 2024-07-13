@@ -1,9 +1,10 @@
-package main
+package parser
 
 import (
 	"bufio"
 	"errors"
 	"log"
+	"log-parser/match"
 	"os"
 )
 
