@@ -6,10 +6,11 @@ import (
 )
 
 var (
-	initGameRe       = regexp.MustCompile(`^\s*\d+:\d+\s+InitGame:`)
-	clientUserInfoRe = regexp.MustCompile(`ClientUserinfoChanged:\s+\d+\s+n\\([^\\]+)`)
-	killDetailsRe    = regexp.MustCompile(`Kill: \d+ \d+ \d+: ([^ ]+) killed ([^ ]+) by ([^ ]+)`)
-	shutDownGameRe   = regexp.MustCompile(`^\d{2}:\d{2} ShutdownGame:$`)
+	initGameRe             = regexp.MustCompile(`^\s*\d+:\d+\s+InitGame:`)
+	clientUserInfoRe       = regexp.MustCompile(`ClientUserinfoChanged:\s+\d+\s+n\\([^\\]+)`)
+	killDetailsRe          = regexp.MustCompile(`Kill: \d+ \d+ \d+: ([^ ]+) killed ([^ ]+) by ([^ ]+)`)
+	shutDownGameRe         = regexp.MustCompile(`^\d{2}:\d{2} ShutdownGame:$`)
+	unknownReasonEndGameRe = regexp.MustCompile(`^.*\d+\s+0:00`)
 )
 
 type LogDigesterHandler interface {
@@ -105,17 +106,17 @@ func NewKillDetailsHandler() *KillDetailsHandler {
 func (h *KillDetailsHandler) Handle(logLine string, match *match.Match) error {
 	killerPiece, killedPlayerPiece, reasonPiece := 1, 2, 3
 	matches := killDetailsRe.FindStringSubmatch(logLine)
-	if len(matches) == 0 {
+	if len(matches) > 3 {
+		match.AddKillAndMeans(
+			matches[killerPiece],
+			matches[killedPlayerPiece],
+			matches[reasonPiece],
+		)
+
 		return nil
 	}
 
-	match.AddKillAndMeans(
-		matches[killerPiece],
-		matches[killedPlayerPiece],
-		matches[reasonPiece],
-	)
-
-	return nil
+	return h.handleNext(logLine, match)
 }
 
 func NewEndGameHandler() *EndGameHandler {
@@ -123,6 +124,10 @@ func NewEndGameHandler() *EndGameHandler {
 }
 
 func (h *EndGameHandler) Handle(logLine string, match *match.Match) error {
+	if shutDownGameRe.MatchString(logLine) || unknownReasonEndGameRe.MatchString(logLine) {
+		match.Done = true
+	}
+
 	return nil
 }
 
