@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestLogsDigester(t *testing.T) {
 	type args struct {
@@ -20,6 +23,9 @@ func TestLogsDigester(t *testing.T) {
 				match:   &Match{},
 			},
 			wantErr: nil,
+			wantMatch: &Match{
+				Players: []string{},
+			},
 		},
 		{
 			name: "should parse the client user info changed log entry adding a new player to the match",
@@ -29,6 +35,9 @@ func TestLogsDigester(t *testing.T) {
 			},
 			wantMatch: &Match{
 				Players: []string{"Isgalamido"},
+				Kills: map[string]int{
+					"Isgalamido": 0,
+				},
 			},
 			wantErr: nil,
 		},
@@ -39,12 +48,19 @@ func TestLogsDigester(t *testing.T) {
 			logsDigester := LoadLogsDigester()
 			err := logsDigester.Handle(tt.args.logLine, tt.args.match)
 
-			if err.Error() != tt.wantErr.Error() {
-				t.Errorf("error mismtach, want %s, got %s", tt.wantErr.Error(), err.Error())
+			if tt.wantErr != nil {
+				if err.Error() != tt.wantErr.Error() {
+					t.Errorf("error mismtach, want %s, got %s", tt.wantErr.Error(), err.Error())
+				}
 			}
 
-			if tt.args.match != tt.wantMatch {
-				t.Errorf("mismatch game match, want %v, got %v", tt.wantMatch, tt.args.match)
+			assert.Equal(t, len(tt.wantMatch.Players), len(tt.args.match.Players))
+
+			for wantPlayer, wantKillValue := range tt.wantMatch.Kills {
+				for gotPlayer, gotKillValue := range tt.args.match.Kills {
+					assert.Equal(t, wantPlayer, gotPlayer)
+					assert.Equal(t, wantKillValue, gotKillValue)
+				}
 			}
 		})
 	}

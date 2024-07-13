@@ -45,7 +45,7 @@ func NewInitGameHandler() *InitGameHandler {
 
 func (h *InitGameHandler) Handle(logLine string, match *Match) error {
 	if initGameRe.MatchString(logLine) {
-		match = NewMatch()
+		match.InitPlayers()
 		return nil
 	}
 
@@ -61,6 +61,8 @@ func (h *AddPlayerHandler) Handle(logLine string, match *Match) error {
 	if len(values) > 0 {
 		if len(match.Players) == 0 {
 			match.Players = append(match.Players, values[1])
+
+			match.AddKillStats(values[1])
 		} else {
 			for _, player := range match.Players {
 				if player != values[1] {
