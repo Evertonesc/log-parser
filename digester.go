@@ -50,7 +50,14 @@ func NewInitGameHandler() *InitGameHandler {
 
 func (h *InitGameHandler) Handle(logLine string, match *Match) error {
 	if initGameRe.MatchString(logLine) {
-		match.InitPlayers()
+		if !match.InProgress {
+			match.InProgress = true
+
+			return nil
+		}
+
+		match.Done = true
+
 		return nil
 	}
 
