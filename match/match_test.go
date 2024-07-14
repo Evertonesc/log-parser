@@ -1,6 +1,9 @@
 package match
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestMatch_AddKillAndMeans(t *testing.T) {
 	type fields struct {
@@ -22,35 +25,7 @@ func TestMatch_AddKillAndMeans(t *testing.T) {
 		wantMatch *Match
 	}{
 		{
-			name: "should insert the kill information to the match",
-			fields: fields{
-				TotalKills: 0,
-				Players:    []string{"Isgalamido", "Bruce Wayne"},
-				Kills: map[string]int{
-					"Isgalamido":  0,
-					"Bruce Wayne": 0,
-				},
-				KillsByMeans: map[string]int{},
-			},
-			args: args{
-				killer: "Bruce Wayne",
-				killed: "Isgalamido",
-				reason: "MOD_ROCKET_SPLASH",
-			},
-			wantMatch: &Match{
-				TotalKills: 1,
-				Players:    []string{"Isgalamido", "Bruce Wayne"},
-				Kills: map[string]int{
-					"Isgalamido":  0,
-					"Bruce Wayne": 1,
-				},
-				KillsByMeans: map[string]int{
-					"MOD_ROCKET_SPLASH": 1,
-				},
-			},
-		},
-		{
-			name: "should insert the kill information and decrease the killed player by world",
+			name: "should store information of a kill by world",
 			fields: fields{
 				TotalKills: 10,
 				Players:    []string{"Isgalamido", "Bruce Wayne"},
@@ -80,6 +55,65 @@ func TestMatch_AddKillAndMeans(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "should store information of a kill by world",
+			fields: fields{
+				TotalKills: 0,
+				Players:    []string{"Isgalamido", "Bruce Wayne"},
+				Kills: map[string]int{
+					"Isgalamido":  0,
+					"Bruce Wayne": 0,
+				},
+				KillsByMeans: map[string]int{
+					"MOD_ROCKET_SPLASH": 1,
+				},
+			},
+			args: args{
+				killer: "<world>",
+				killed: "Isgalamido",
+				reason: "MOD_TRIGGER_HURT",
+			},
+			wantMatch: &Match{
+				TotalKills: 1,
+				Players:    []string{"Isgalamido", "Bruce Wayne"},
+				Kills: map[string]int{
+					"Isgalamido":  0,
+					"Bruce Wayne": 0,
+				},
+				KillsByMeans: map[string]int{
+					"MOD_ROCKET_SPLASH": 1,
+					"MOD_TRIGGER_HURT":  1,
+				},
+			},
+		},
+		{
+			name: "should insert the kill information to the match",
+			fields: fields{
+				TotalKills: 0,
+				Players:    []string{"Isgalamido", "Bruce Wayne"},
+				Kills: map[string]int{
+					"Isgalamido":  0,
+					"Bruce Wayne": 0,
+				},
+				KillsByMeans: map[string]int{},
+			},
+			args: args{
+				killer: "Bruce Wayne",
+				killed: "Isgalamido",
+				reason: "MOD_ROCKET_SPLASH",
+			},
+			wantMatch: &Match{
+				TotalKills: 1,
+				Players:    []string{"Isgalamido", "Bruce Wayne"},
+				Kills: map[string]int{
+					"Isgalamido":  0,
+					"Bruce Wayne": 1,
+				},
+				KillsByMeans: map[string]int{
+					"MOD_ROCKET_SPLASH": 1,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -90,7 +124,15 @@ func TestMatch_AddKillAndMeans(t *testing.T) {
 				KillsByMeans: tt.fields.KillsByMeans,
 				Done:         tt.fields.Done,
 			}
+
 			m.AddKillAndMeans(tt.args.killer, tt.args.killed, tt.args.reason)
+
+			assert.Equal(t, tt.wantMatch.TotalKills, m.TotalKills)
+			assert.Equal(t, tt.wantMatch.Players, m.Players)
+
+			for k, v := range tt.wantMatch.Kills {
+				assert.Equal(t, v, m.Kills[k])
+			}
 		})
 	}
 }

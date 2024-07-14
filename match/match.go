@@ -33,12 +33,18 @@ func (m *Match) AddKillStats(player string) {
 }
 
 func (m *Match) AddKillAndMeans(killer, killed, reason string) {
+	m.KillsByMeans[reason]++
+	m.TotalKills++
+
+	if killer == killed {
+		return
+	}
+
 	if killer == world {
-		m.Kills[killed]--
+		if m.Kills[killed] > 0 {
+			m.Kills[killed]--
+		}
 	} else {
 		m.Kills[killer]++
 	}
-
-	m.KillsByMeans[reason]++
-	m.TotalKills++
 }
