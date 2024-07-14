@@ -93,7 +93,7 @@ func TestLogsDigester(t *testing.T) {
 		{
 			name: "should parse the shutdown game log line and finish the match returning its data",
 			args: args{
-				logLine: "20:37 ShutdownGame:",
+				logLine: " 20:37 ShutdownGame:",
 				match: &match.Match{
 					TotalKills: 0,
 					Players:    []string{"Isgalamido"},

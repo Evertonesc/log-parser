@@ -9,7 +9,7 @@ var (
 	initGameRe             = regexp.MustCompile(`^\s*\d+:\d+\s+InitGame:`)
 	clientUserInfoRe       = regexp.MustCompile(`ClientUserinfoChanged:\s+\d+\s+n\\([^\\]+)`)
 	killDetailsRe          = regexp.MustCompile(`Kill: \d+ \d+ \d+: ([^ ]+) killed ([^ ]+) by ([^ ]+)`)
-	shutDownGameRe         = regexp.MustCompile(`^\d{2}:\d{2} ShutdownGame:$`)
+	shutDownGameRe         = regexp.MustCompile(`^\s*\d{2}:\d{2}\s*ShutdownGame:$`)
 	unknownReasonEndGameRe = regexp.MustCompile(`^.*\d+\s+0:00`)
 )
 
@@ -125,6 +125,7 @@ func NewEndGameHandler() *EndGameHandler {
 
 func (h *EndGameHandler) Handle(logLine string, match *match.Match) error {
 	if shutDownGameRe.MatchString(logLine) || unknownReasonEndGameRe.MatchString(logLine) {
+		match.InProgress = false
 		match.Done = true
 	}
 
