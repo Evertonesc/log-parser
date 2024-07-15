@@ -77,7 +77,7 @@ func TestMatch_AddKillAndMeans(t *testing.T) {
 				TotalKills: 1,
 				Players:    []string{"Isgalamido", "Bruce Wayne"},
 				Kills: map[string]int{
-					"Isgalamido":  0,
+					"Isgalamido":  -1,
 					"Bruce Wayne": 0,
 				},
 				KillsByMeans: map[string]int{

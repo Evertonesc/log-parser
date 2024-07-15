@@ -42,9 +42,7 @@ func (m *Match) AddKillAndMeans(killer, killed, reason string) {
 	}
 
 	if killer == world {
-		if m.Kills[killed] > 0 {
-			m.Kills[killed]--
-		}
+		m.Kills[killed]--
 	} else {
 		m.Kills[killer]++
 	}
