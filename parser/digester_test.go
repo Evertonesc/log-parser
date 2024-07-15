@@ -155,6 +155,54 @@ func TestKillDetailsHandler_Handle(t *testing.T) {
 			},
 			wantErr: assert.NoError,
 		},
+		{
+			name: "should successfully parse the kill log entry and add its information to the match",
+			args: args{
+				logLine: "  1:41 Kill: 1022 2 19: <world> killed Dono da Bola by MOD_FALLING",
+				match: func() *match.Match {
+					return &match.Match{
+						TotalKills: 5,
+						Players:    []string{"Isgalamido", "Bruce Wayne"},
+						Kills: map[string]int{
+							"Isgalamido":   3,
+							"Dono da Bola": 2,
+						},
+						KillsByMeans: map[string]int{
+							"MOD_TRIGGER_HURT":  1,
+							"MOD_ROCKET_SPLASH": 2,
+							"MOD_FALLING":       2,
+						},
+						PlayersInGame: map[string]bool{
+							"Isgalamido":   true,
+							"Dono da Bola": true,
+						},
+						Done:       false,
+						InProgress: true,
+					}
+
+				},
+			},
+			wantMatch: &match.Match{
+				TotalKills: 6,
+				Players:    []string{"Isgalamido", "Bruce Wayne"},
+				Kills: map[string]int{
+					"Isgalamido":   3,
+					"Dono da Bola": 1,
+				},
+				KillsByMeans: map[string]int{
+					"MOD_TRIGGER_HURT":  1,
+					"MOD_ROCKET_SPLASH": 2,
+					"MOD_FALLING":       3,
+				},
+				PlayersInGame: map[string]bool{
+					"Isgalamido":   true,
+					"Dono da Bola": true,
+				},
+				Done:       false,
+				InProgress: true,
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

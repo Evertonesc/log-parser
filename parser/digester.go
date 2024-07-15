@@ -8,7 +8,7 @@ import (
 var (
 	initGameRe             = regexp.MustCompile(`^\s*\d+:\d+\s+InitGame:`)
 	clientUserInfoRe       = regexp.MustCompile(`ClientUserinfoChanged:\s+\d+\s+n\\([^\\]+)`)
-	killDetailsRe          = regexp.MustCompile(`Kill: \d+ \d+ \d+: ([^ ]+) killed ([^ ]+) by ([^ ]+)`)
+	killDetailsRe          = regexp.MustCompile(`\s*\d{1,2}:\d{2}\s+Kill: \d+ \d+ \d+: ([^ ]+) killed ([^ ]+(?: [^ ]+)*) by ([^ ]+)`)
 	shutDownGameRe         = regexp.MustCompile(`^\s*\d{2}:\d{2}\s*ShutdownGame:$`)
 	unknownReasonEndGameRe = regexp.MustCompile(`^.*\d+\s+0:00`)
 )
