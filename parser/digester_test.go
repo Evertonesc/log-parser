@@ -20,7 +20,23 @@ func TestInitGameHandler_Handle(t *testing.T) {
 		{
 			name: "should successfully parse a init game log entry",
 			args: args{
-				logLine: "0:00 InitGame: \\\\\\\\sv_floodProtect\\\\\\\\1\\\\\\\\sv_maxPing\\\\\\\\0\\\\\\\\sv_minPing\\\\\\\\0\\\\\\\\sv_maxRate\\\\\\\\10000\\\\\\\\sv_minRate\\\\\\\\0\\\\\\\\sv_hostname\\\\\\\\Code Miner Server\\\\\\\\g_gametype\\\\\\\\0\\\\\\\\sv_privateClients\\\\\\\\2\\\\\\\\sv_maxclients\\\\\\\\16\\\\\\\\sv_allowDownload\\\\\\\\0\\\\\\\\dmflags\\\\\\\\0\\\\\\\\fraglimit\\\\\\\\20\\\\\\\\timelimit\\\\\\\\15\\\\\\\\g_maxGameClients\\\\\\\\0\\\\\\\\capturelimit\\\\\\\\8\\\\\\\\version\\\\\\\\ioq3 1.36 linux-x86_64 Apr 12 2009\\\\\\\\protocol\\\\\\\\68\\\\\\\\mapname\\\\\\\\q3dm17\\\\\\\\gamename\\\\\\\\baseq3\\\\\\\\g_needpass\\\\\\\\0\\n",
+				logLine: "  0:00 InitGame: \\sv_floodProtect\\1\\sv_maxPing\\0\\sv_minPing\\0\\sv_maxRate\\10000\\sv_minRate\\0\\sv_hostname\\Code Miner Server\\g_gametype\\0\\sv_privateClients\\2\\sv_maxclients\\16\\sv_allowDownload\\0\\dmflags\\0\\fraglimit\\20\\timelimit\\15\\g_maxGameClients\\0\\capturelimit\\8\\version\\ioq3 1.36 linux-x86_64 Apr 12 2009\\protocol\\68\\mapname\\q3dm17\\gamename\\baseq3\\g_needpass\\0",
+				match:   match.NewMatch(),
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "should successfully parse a init game log entry",
+			args: args{
+				logLine: " 16:53 InitGame: \\capturelimit\\8\\g_maxGameClients\\0\\timelimit\\15\\fraglimit\\20\\dmflags\\0\\bot_minplayers\\0\\sv_allowDownload\\0\\sv_maxclients\\16\\sv_privateClients\\2\\g_gametype\\4\\sv_hostname\\Code Miner Server\\sv_minRate\\0\\sv_maxRate\\10000\\sv_minPing\\0\\sv_maxPing\\0\\sv_floodProtect\\1\\version\\ioq3 1.36 linux-x86_64 Apr 12 2009\\protocol\\68\\mapname\\Q3TOURNEY6_CTF\\gamename\\baseq3\\g_needpass\\0",
+				match:   match.NewMatch(),
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "should successfully parse a init game log entry",
+			args: args{
+				logLine: "981:27 InitGame: \\capturelimit\\8\\g_maxGameClients\\0\\timelimit\\15\\fraglimit\\20\\dmflags\\0\\bot_minplayers\\0\\sv_allowDownload\\0\\sv_maxclients\\16\\sv_privateClients\\2\\g_gametype\\4\\sv_hostname\\Code Miner Server\\sv_minRate\\0\\sv_maxRate\\10000\\sv_minPing\\0\\sv_maxPing\\0\\sv_floodProtect\\1\\version\\ioq3 1.36 linux-x86_64 Apr 12 2009\\protocol\\68\\mapname\\Q3TOURNEY6_CTF\\gamename\\baseq3\\g_needpass\\0",
 				match:   match.NewMatch(),
 			},
 			wantErr: assert.NoError,
