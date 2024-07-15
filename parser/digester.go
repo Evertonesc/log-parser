@@ -9,6 +9,7 @@ var (
 	initGameRe             = regexp.MustCompile(`^\s*\d{1,3}:\d{2}\s+InitGame:.*$`)
 	clientUserInfoRe       = regexp.MustCompile(`ClientUserinfoChanged:\s+\d+\s+n\\([^\\]+)`)
 	killDetailsRe          = regexp.MustCompile(`\s*\d{1,2}:\d{2}\s+Kill: \d+ \d+ \d+: ([^ ]+) killed ([^ ]+(?: [^ ]+)*) by ([^ ]+)`)
+	killSubMatchRe         = regexp.MustCompile(`:\s+\d+\s+\d+\s+\d+:\s+(.+?)\skilled\s(.+?)\sby\s(\S+)$`)
 	shutDownGameRe         = regexp.MustCompile(`^\s*\d{1,3}:\d{2}\s+ShutdownGame:$`)
 	unknownReasonEndGameRe = regexp.MustCompile(`^.*\d+\s+0:00`)
 )
@@ -98,6 +99,9 @@ func NewKillDetailsHandler() *KillDetailsHandler {
 func (h *KillDetailsHandler) Handle(logLine string, match *match.Match) error {
 	killerPiece, killedPlayerPiece, reasonPiece := 1, 2, 3
 	matches := killDetailsRe.FindStringSubmatch(logLine)
+	if len(matches) == 0 {
+		matches = killSubMatchRe.FindStringSubmatch(logLine)
+	}
 	if len(matches) > 3 {
 		match.AddKillAndMeans(
 			matches[killerPiece],
