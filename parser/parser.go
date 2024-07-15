@@ -8,10 +8,10 @@ import (
 	"os"
 )
 
-func parseLog(filepath string) error {
+func ParseLog(filepath string) ([]*match.Match, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
-		return errors.New("reading the log file")
+		return nil, errors.New("reading the log file")
 	}
 	defer func(file *os.File) {
 		err = file.Close()
@@ -21,17 +21,24 @@ func parseLog(filepath string) error {
 	}(file)
 
 	digester := LoadLogsDigester()
-	match := &Match{}
+	gameMatch := match.NewMatch()
+
+	matches := make([]*match.Match, 0)
 
 	sc := bufio.NewScanner(file)
 	for sc.Scan() {
 		logLine := sc.Text()
 
-		err = digester.Handle(logLine, match)
+		err = digester.Handle(logLine, gameMatch)
 		if err != nil {
 			log.Fatal("digesting log file")
 		}
+
+		if gameMatch.Done {
+			matches = append(matches, gameMatch)
+			gameMatch = match.NewMatch()
+		}
 	}
 
-	return nil
+	return matches, nil
 }
