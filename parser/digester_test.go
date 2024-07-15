@@ -390,6 +390,96 @@ func TestEndGameHandler_Handle(t *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "should successfully parse a shutdown game log entry and set the done match stats to true and in progress to false",
+			args: args{
+				logLine: "  1:47 ShutdownGame:",
+				match: &match.Match{
+					TotalKills: 5,
+					Players:    []string{"Isgalamido", "Bruce Wayne"},
+					Kills: map[string]int{
+						"Isgalamido":  3,
+						"Bruce Wayne": 2,
+					},
+					KillsByMeans: map[string]int{
+						"MOD_TRIGGER_HURT":  1,
+						"MOD_ROCKET_SPLASH": 2,
+						"MOD_FALLING":       2,
+					},
+					PlayersInGame: map[string]bool{
+						"Isgalamido":  true,
+						"Bruce Wayne": true,
+					},
+					Done:       false,
+					InProgress: true,
+				},
+			},
+			wantMatch: &match.Match{
+				TotalKills: 5,
+				Players:    []string{"Isgalamido", "Bruce Wayne"},
+				Kills: map[string]int{
+					"Isgalamido":  3,
+					"Bruce Wayne": 2,
+				},
+				KillsByMeans: map[string]int{
+					"MOD_TRIGGER_HURT":  1,
+					"MOD_ROCKET_SPLASH": 2,
+					"MOD_FALLING":       2,
+				},
+				PlayersInGame: map[string]bool{
+					"Isgalamido":  true,
+					"Bruce Wayne": true,
+				},
+				Done:       true,
+				InProgress: false,
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "should successfully parse a shutdown game log entry and set the done match stats to true and in progress to false",
+			args: args{
+				logLine: "981:39 ShutdownGame:",
+				match: &match.Match{
+					TotalKills: 5,
+					Players:    []string{"Isgalamido", "Bruce Wayne"},
+					Kills: map[string]int{
+						"Isgalamido":  3,
+						"Bruce Wayne": 2,
+					},
+					KillsByMeans: map[string]int{
+						"MOD_TRIGGER_HURT":  1,
+						"MOD_ROCKET_SPLASH": 2,
+						"MOD_FALLING":       2,
+					},
+					PlayersInGame: map[string]bool{
+						"Isgalamido":  true,
+						"Bruce Wayne": true,
+					},
+					Done:       false,
+					InProgress: true,
+				},
+			},
+			wantMatch: &match.Match{
+				TotalKills: 5,
+				Players:    []string{"Isgalamido", "Bruce Wayne"},
+				Kills: map[string]int{
+					"Isgalamido":  3,
+					"Bruce Wayne": 2,
+				},
+				KillsByMeans: map[string]int{
+					"MOD_TRIGGER_HURT":  1,
+					"MOD_ROCKET_SPLASH": 2,
+					"MOD_FALLING":       2,
+				},
+				PlayersInGame: map[string]bool{
+					"Isgalamido":  true,
+					"Bruce Wayne": true,
+				},
+				Done:       true,
+				InProgress: false,
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name: "should successfully parse a log entry that finishes the game by an unknown reason and finish the match",
 			args: args{
 				logLine: "26  0:00 ------------------------------------------------------------",
@@ -439,6 +529,9 @@ func TestEndGameHandler_Handle(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			h := NewEndGameHandler()
 			tt.wantErr(t, h.Handle(tt.args.logLine, tt.args.match), fmt.Sprintf("Handle(%v, %v)", tt.args.logLine, tt.args.match))
+
+			assert.Equal(t, tt.wantMatch.Done, tt.args.match.Done)
+			assert.Equal(t, tt.wantMatch.InProgress, tt.args.match.InProgress)
 
 			assert.Equal(t, len(tt.wantMatch.Players), len(tt.args.match.Players))
 
