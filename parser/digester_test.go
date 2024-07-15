@@ -75,6 +75,43 @@ func TestAddPlayerHandler_Handle(t *testing.T) {
 			},
 			wantErr: assert.NoError,
 		},
+		{
+			name: "should successfully parse a client user info changed log entry and update the match data with a new player",
+			args: args{
+				logLine: " 20:34 ClientUserinfoChanged: 2 n\\Mocinha\\t\\0\\model\\xian/default\\hmodel\\xian/default\\g_redteam\\\\g_blueteam\\\\c1\\4\\c2\\5\\hc\\100\\w\\0\\l\\0\\tt\\0\\tl\\0",
+				match: func() *match.Match {
+					return &match.Match{
+						TotalKills: 0,
+						Players:    []string{"Isgalamido"},
+						Kills: map[string]int{
+							"Isgalamido": 0,
+						},
+						KillsByMeans: nil,
+						PlayersInGame: map[string]bool{
+							"Isgalamido": true,
+						},
+						Done:       false,
+						InProgress: true,
+					}
+				},
+			},
+			wantMatch: &match.Match{
+				TotalKills: 0,
+				Players:    []string{"Isgalamido", "Mocinha"},
+				Kills: map[string]int{
+					"Isgalamido": 0,
+					"Mocinha":    0,
+				},
+				KillsByMeans: nil,
+				PlayersInGame: map[string]bool{
+					"Isgalamido": true,
+					"Mocinha":    true,
+				},
+				Done:       false,
+				InProgress: true,
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

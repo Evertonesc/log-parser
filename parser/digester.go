@@ -80,20 +80,12 @@ func (h *AddPlayerHandler) Handle(logLine string, match *match.Match) error {
 	if len(values) > 0 {
 		player := values[1]
 
-		if len(match.Players) == 0 {
+		_, ok := match.PlayersInGame[player]
+		if !ok {
 			match.Players = append(match.Players, player)
-
-			match.AddKillStats(player)
 			match.PlayersInGame[player] = true
-
-		} else {
-			_, ok := match.PlayersInGame[player]
-			if !ok {
-				match.Players = append(match.Players, player)
-				match.PlayersInGame[player] = true
-			}
+			match.AddKillStats(player)
 		}
-
 	}
 
 	return h.handleNext(logLine, match)
