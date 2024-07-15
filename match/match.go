@@ -27,8 +27,9 @@ func NewMatch() *Match {
 }
 
 func (m *Match) AddKillStats(player string) {
-	m.Kills = map[string]int{
-		player: 0,
+	_, ok := m.Kills[player]
+	if !ok {
+		m.Kills[player] = 0
 	}
 }
 
