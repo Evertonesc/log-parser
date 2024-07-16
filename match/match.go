@@ -4,15 +4,21 @@ const (
 	world = "<world>"
 )
 
-type Match struct {
-	TotalKills    int            `json:"total_kills"`
-	Players       []string       `json:"players"`
-	Kills         map[string]int `json:"kills"`
-	KillsByMeans  map[string]int `json:"kills_by_means"`
-	PlayersInGame map[string]bool
-	Done          bool
-	InProgress    bool
-}
+type (
+	Match struct {
+		TotalKills    int             `json:"total_kills"`
+		Players       []string        `json:"players"`
+		Kills         map[string]int  `json:"kills"`
+		KillsByMeans  map[string]int  `json:"-"`
+		PlayersInGame map[string]bool `json:"-"`
+		Done          bool            `json:"-"`
+		InProgress    bool            `json:"-"`
+	}
+
+	Summary struct {
+		KillsByMeans map[string]int `json:"kills_by_means"`
+	}
+)
 
 func NewMatch() *Match {
 	return &Match{
