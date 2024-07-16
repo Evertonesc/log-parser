@@ -9,13 +9,16 @@ makes the main functionality of the parser easy to understand and flexible enoug
 ---
 
 ## Execution
-**Run with Makefile**
-
-``make exec``
 
 **Run with Go**
 
 ``go run main.go``
+
+**Run with Makefile**
+
+``make exec``
+
+
 
 
 ---
