@@ -154,7 +154,6 @@ func GatherLines(logLine string) (string, bool) {
 	case killSubMatchRe.MatchString(logLine):
 		return logLine, false
 	case shutDownGameRe.MatchString(logLine):
-		//doneGatherStream <- struct{}{}
 		return logLine, true
 	case unknownReasonEndGameRe.MatchString(logLine):
 		return logLine, true
