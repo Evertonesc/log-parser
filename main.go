@@ -58,5 +58,5 @@ func main() {
 	fmt.Println(string(summaryOutput))
 
 	elapsedTime := time.Since(now)
-	fmt.Printf("parser taken %v ms to run", elapsedTime.Milliseconds())
+	fmt.Printf("reports generated in %d ms", elapsedTime.Milliseconds())
 }
