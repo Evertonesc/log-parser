@@ -54,9 +54,8 @@ func main() {
 	fmt.Printf("Matches Report - %v\n", reportTime)
 	fmt.Println(string(matchesOutput))
 
-	fmt.Printf("Matches Summary Report - %v\n", reportTime)
+	fmt.Printf("Deaths by Death cause - %v\n", reportTime)
 	fmt.Println(string(summaryOutput))
 
-	elapsedTime := time.Since(now)
-	fmt.Printf("reports generated in %d ms", elapsedTime.Milliseconds())
+	fmt.Printf("reports generated in %d ms", time.Since(now).Milliseconds())
 }
