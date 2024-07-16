@@ -16,7 +16,7 @@ func ParseLog(filepath string) ([]*match.Match, error) {
 	defer func(file *os.File) {
 		err = file.Close()
 		if err != nil {
-			log.Fatal("closing the file")
+			log.Fatalf("closing the file: %s", err.Error())
 		}
 	}(file)
 
