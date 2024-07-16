@@ -24,9 +24,9 @@ func NewMatch() *Match {
 	return &Match{
 		TotalKills:    0,
 		Players:       make([]string, 0),
-		Kills:         map[string]int{},
-		KillsByMeans:  map[string]int{},
-		PlayersInGame: map[string]bool{},
+		Kills:         make(map[string]int),
+		KillsByMeans:  make(map[string]int),
+		PlayersInGame: make(map[string]bool),
 		Done:          false,
 		InProgress:    false,
 	}
