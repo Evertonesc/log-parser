@@ -21,23 +21,51 @@ func ParseLog(filepath string) ([]*match.Match, error) {
 	}(file)
 
 	digester := LoadLogsDigester()
-	gameMatch := match.NewMatch()
-
 	matches := make([]*match.Match, 0)
 
-	sc := bufio.NewScanner(file)
-	for sc.Scan() {
-		logLine := sc.Text()
+	resultStream := make(chan *match.Match)
+	gatheredLinesStream := make(chan []string)
+	lines := make([]string, 0)
 
-		err = digester.Handle(logLine, gameMatch)
-		if err != nil {
-			log.Fatalf("digesting log file: %s", err.Error())
+	go func() {
+		defer close(gatheredLinesStream)
+		sc := bufio.NewScanner(file)
+		for sc.Scan() {
+			logLine, matchLastLine := GatherLines(sc.Text())
+			if logLine != "" {
+				lines = append(lines, logLine)
+			}
+
+			if matchLastLine {
+				gatheredLinesStream <- lines
+				lines = make([]string, 0)
+			}
 		}
 
-		if gameMatch.Done {
-			matches = append(matches, gameMatch)
-			gameMatch = match.NewMatch()
+		if len(lines) > 0 {
+			gatheredLinesStream <- lines
 		}
+	}()
+
+	go func() {
+		defer close(resultStream)
+		for gatheredLine := range gatheredLinesStream {
+			gameMatch := match.NewMatch()
+			for _, line := range gatheredLine {
+				err = digester.Handle(line, gameMatch)
+				if err != nil {
+					log.Fatalf("digesting log file: %v", err.Error())
+				}
+
+				if gameMatch.Done {
+					resultStream <- gameMatch
+				}
+			}
+		}
+	}()
+
+	for result := range resultStream {
+		matches = append(matches, result)
 	}
 
 	return matches, nil

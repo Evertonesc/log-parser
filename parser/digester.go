@@ -142,3 +142,23 @@ func LoadLogsDigester() LogDigesterHandler {
 
 	return initGameHandler
 }
+
+func GatherLines(logLine string) (string, bool) {
+	switch {
+	case initGameRe.MatchString(logLine):
+		return logLine, false
+	case clientUserInfoRe.MatchString(logLine):
+		return logLine, false
+	case killDetailsRe.MatchString(logLine):
+		return logLine, false
+	case killSubMatchRe.MatchString(logLine):
+		return logLine, false
+	case shutDownGameRe.MatchString(logLine):
+		//doneGatherStream <- struct{}{}
+		return logLine, true
+	case unknownReasonEndGameRe.MatchString(logLine):
+		return logLine, true
+	default:
+		return "", false
+	}
+}
