@@ -6,6 +6,7 @@ import (
 	"log"
 	"log-parser/match"
 	"os"
+	"sync"
 )
 
 func ParseLog(filepath string) ([]*match.Match, error) {
@@ -47,21 +48,29 @@ func ParseLog(filepath string) ([]*match.Match, error) {
 		}
 	}()
 
+	var wg sync.WaitGroup
 	go func() {
-		defer close(resultStream)
-		for gatheredLine := range gatheredLinesStream {
-			gameMatch := match.NewMatch()
-			for _, line := range gatheredLine {
-				err = digester.Handle(line, gameMatch)
-				if err != nil {
-					log.Fatalf("digesting log file: %v", err.Error())
-				}
+		for gatheredLines := range gatheredLinesStream {
+			wg.Add(1)
+			go func(gatheredLines []string) {
+				defer wg.Done()
 
-				if gameMatch.Done {
-					resultStream <- gameMatch
+				gameMatch := match.NewMatch()
+				for _, line := range gatheredLines {
+					err = digester.Handle(line, gameMatch)
+					if err != nil {
+						log.Fatalf("digesting log file: %v", err.Error())
+					}
+
+					if gameMatch.Done {
+						resultStream <- gameMatch
+					}
 				}
-			}
+			}(gatheredLines)
 		}
+
+		wg.Wait()
+		close(resultStream)
 	}()
 
 	for result := range resultStream {
