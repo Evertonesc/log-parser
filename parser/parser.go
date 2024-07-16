@@ -31,7 +31,7 @@ func ParseLog(filepath string) ([]*match.Match, error) {
 
 		err = digester.Handle(logLine, gameMatch)
 		if err != nil {
-			log.Fatal("digesting log file")
+			log.Fatalf("digesting log file: %s", err.Error())
 		}
 
 		if gameMatch.Done {
